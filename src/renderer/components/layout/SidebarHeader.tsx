@@ -200,12 +200,16 @@ export const SidebarHeader = (): React.JSX.Element => {
 
   const {
     repositoryGroups,
+    repositoryGroupsLoading,
+    repositoryGroupsError,
     selectedRepositoryId,
     selectedWorktreeId,
     selectWorktree,
     selectRepository,
     viewMode,
     projects,
+    projectsLoading,
+    projectsError,
     activeProjectId,
     setActiveProject,
     fetchRepositoryGroups,
@@ -215,12 +219,16 @@ export const SidebarHeader = (): React.JSX.Element => {
   } = useStore(
     useShallow((s) => ({
       repositoryGroups: s.repositoryGroups,
+      repositoryGroupsLoading: s.repositoryGroupsLoading,
+      repositoryGroupsError: s.repositoryGroupsError,
       selectedRepositoryId: s.selectedRepositoryId,
       selectedWorktreeId: s.selectedWorktreeId,
       selectWorktree: s.selectWorktree,
       selectRepository: s.selectRepository,
       viewMode: s.viewMode,
       projects: s.projects,
+      projectsLoading: s.projectsLoading,
+      projectsError: s.projectsError,
       activeProjectId: s.activeProjectId,
       setActiveProject: s.setActiveProject,
       fetchRepositoryGroups: s.fetchRepositoryGroups,
@@ -434,7 +442,16 @@ export const SidebarHeader = (): React.JSX.Element => {
                 Switch {viewMode === 'grouped' ? 'Repository' : 'Project'}
               </div>
 
-              {projectItems.length === 0 ? (
+              {(viewMode === 'grouped' ? repositoryGroupsLoading : projectsLoading) ? (
+                <div className="p-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                  Loading projects...
+                </div>
+              ) : (viewMode === 'grouped' ? repositoryGroupsError : projectsError) ? (
+                <div className="p-3 text-sm" style={{ color: 'var(--assess-danger)' }}>
+                  Error loading projects:{' '}
+                  {viewMode === 'grouped' ? repositoryGroupsError : projectsError}
+                </div>
+              ) : projectItems.length === 0 ? (
                 <div className="p-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   No {viewMode === 'grouped' ? 'repositories' : 'projects'} found
                 </div>

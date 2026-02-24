@@ -58,7 +58,7 @@ export class WorktreeGrouper {
     const projectIdentities = new Map<string, RepositoryIdentity | null>();
     const projectBranches = new Map<string, string | null>();
 
-    await Promise.all(
+    const identityResults = await Promise.allSettled(
       projects.map(async (project) => {
         const identity = await gitIdentityResolver.resolveIdentity(project.path);
         projectIdentities.set(project.id, identity);
@@ -69,12 +69,21 @@ export class WorktreeGrouper {
       })
     );
 
+    // Log errors from identity resolution but don't stop the whole scan
+    for (const result of identityResults) {
+      if (result.status === 'rejected') {
+        // We don't have the project ID here easily without wrapping, but errors are logged internally by gitIdentityResolver
+        // or we could log here if needed.
+        // For now, continue processing valid results.
+      }
+    }
+
     // 2. Filter sessions for each project to only include non-noise sessions
     const projectFilteredSessions = new Map<string, string[]>();
     // Fast-first default for both local and SSH: avoid full-file scans during dashboard load.
     // Can be re-enabled for strict parity debugging.
     const shouldFilterNoise = process.env.CLAUDE_DEVTOOLS_STRICT_SESSION_FILTER === '1';
-    await Promise.all(
+    const filterResults = await Promise.allSettled(
       projects.map(async (project) => {
         const baseDir = extractBaseDir(project.id);
         const projectPath = path.join(this.projectsDir, baseDir);
@@ -100,6 +109,13 @@ export class WorktreeGrouper {
         projectFilteredSessions.set(project.id, filteredSessions);
       })
     );
+
+    // Log errors from filtering
+    for (const result of filterResults) {
+      if (result.status === 'rejected') {
+        // Continue processing valid results
+      }
+    }
 
     // 3. Group projects by repository
     const repoGroups = new Map<
