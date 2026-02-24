@@ -77,6 +77,8 @@ export interface TabSlice {
     fromSearch?: boolean,
     searchContext?: SearchNavigationContext
   ) => void;
+
+  openAnalytics: (scope: 'project' | 'global', projectId?: string) => void;
 }
 
 // =============================================================================
@@ -661,6 +663,30 @@ export const createTabSlice: StateCreator<AppState, [], [], TabSlice> = (set, ge
   setActiveProject: (projectId: string) => {
     set({ activeProjectId: projectId });
     get().selectProject(projectId);
+  },
+
+  // Open an analytics tab
+  openAnalytics: (scope: 'project' | 'global', projectId?: string) => {
+    const state = get();
+    const label = scope === 'project' ? 'Project Analytics' : 'Global Analytics';
+
+    // Check if an analytics tab with the same scope/projectId is already open
+    const allTabs = getAllTabs(state.paneLayout);
+    const existingTab = allTabs.find(
+      (t) => t.type === 'analytics' && t.scope === scope && t.projectId === projectId
+    );
+
+    if (existingTab) {
+      state.setActiveTab(existingTab.id);
+      return;
+    }
+
+    state.openTab({
+      type: 'analytics',
+      label,
+      scope,
+      projectId,
+    });
   },
 
   // Navigate to a session (from search or other sources)

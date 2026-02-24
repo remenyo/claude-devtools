@@ -211,6 +211,7 @@ export const SidebarHeader = (): React.JSX.Element => {
     fetchRepositoryGroups,
     fetchProjects,
     toggleSidebar,
+    openAnalytics,
   } = useStore(
     useShallow((s) => ({
       repositoryGroups: s.repositoryGroups,
@@ -225,6 +226,7 @@ export const SidebarHeader = (): React.JSX.Element => {
       fetchRepositoryGroups: s.fetchRepositoryGroups,
       fetchProjects: s.fetchProjects,
       toggleSidebar: s.toggleSidebar,
+      openAnalytics: s.openAnalytics,
     }))
   );
 
@@ -391,6 +393,40 @@ export const SidebarHeader = (): React.JSX.Element => {
                 borderColor: 'var(--color-border)',
               }}
             >
+              <div
+                className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
+                Analytics
+              </div>
+
+              <button
+                onClick={() => {
+                  if (activeProjectId) openAnalytics('project', activeProjectId);
+                  setIsProjectDropdownOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-left transition-colors hover:bg-white/5"
+                style={{ color: 'var(--color-text)' }}
+              >
+                <span className="text-sm">Project Analytics</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  openAnalytics('global');
+                  setIsProjectDropdownOpen(false);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-left transition-colors hover:bg-white/5"
+                style={{ color: 'var(--color-text)' }}
+              >
+                <span className="text-sm">Global Analytics</span>
+              </button>
+
+              <div
+                className="my-1 h-px"
+                style={{ backgroundColor: 'var(--color-border)' }}
+              />
+
               <div
                 className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider"
                 style={{ color: 'var(--color-text-muted)' }}
