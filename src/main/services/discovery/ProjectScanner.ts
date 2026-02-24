@@ -177,7 +177,7 @@ export class ProjectScanner {
       return this.worktreeGrouper.groupByRepository(projects);
     } catch (error) {
       logger.error('Error scanning with worktree grouping:', error);
-      return [];
+      throw error;
     }
   }
 

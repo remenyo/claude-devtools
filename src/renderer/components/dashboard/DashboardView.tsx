@@ -261,15 +261,21 @@ const ProjectsGrid = ({
   searchQuery,
   maxProjects = 12,
 }: Readonly<ProjectsGridProps>): React.JSX.Element => {
-  const { repositoryGroups, repositoryGroupsLoading, fetchRepositoryGroups, selectRepository } =
-    useStore(
-      useShallow((s) => ({
-        repositoryGroups: s.repositoryGroups,
-        repositoryGroupsLoading: s.repositoryGroupsLoading,
-        fetchRepositoryGroups: s.fetchRepositoryGroups,
-        selectRepository: s.selectRepository,
-      }))
-    );
+  const {
+    repositoryGroups,
+    repositoryGroupsLoading,
+    repositoryGroupsError,
+    fetchRepositoryGroups,
+    selectRepository,
+  } = useStore(
+    useShallow((s) => ({
+      repositoryGroups: s.repositoryGroups,
+      repositoryGroupsLoading: s.repositoryGroupsLoading,
+      repositoryGroupsError: s.repositoryGroupsError,
+      fetchRepositoryGroups: s.fetchRepositoryGroups,
+      selectRepository: s.selectRepository,
+    }))
+  );
 
   useEffect(() => {
     if (repositoryGroups.length === 0) {
@@ -295,6 +301,24 @@ const ProjectsGrid = ({
       })
       .slice(0, maxProjects);
   }, [repositoryGroups, searchQuery, maxProjects]);
+
+  if (repositoryGroupsError) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-sm border border-dashed border-red-900/30 bg-red-900/10 px-8 py-16">
+        <div className="mb-4 flex size-12 items-center justify-center rounded-sm border border-red-900/40 bg-red-900/20">
+          <FolderGit2 className="size-6 text-red-400" />
+        </div>
+        <p className="mb-1 text-sm font-medium text-red-400">Error loading projects</p>
+        <p className="text-center text-xs text-red-300/70">{repositoryGroupsError}</p>
+        <button
+          onClick={() => void fetchRepositoryGroups()}
+          className="mt-4 rounded bg-red-900/40 px-3 py-1.5 text-xs text-red-200 hover:bg-red-900/60"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   if (repositoryGroupsLoading) {
     // Organic widths per card — no repeating stamp
