@@ -13,12 +13,10 @@ import {
 
 import type {
   ModelTokenStats,
+  ReportCostAnalysis,
   SessionReport,
-  SubagentBasicEntry,
-  SubagentEntry,
   ToolError,
   ToolSuccessRate,
-  ReportCostAnalysis,
 } from '@renderer/types/sessionReport';
 
 // Helper to format duration if not exported
@@ -88,8 +86,8 @@ export function aggregateReports(reports: SessionReport[]): SessionReport | null
   const toolCounts: Record<string, number> = {};
   const toolErrors: Record<string, number> = {};
   for (const r of reports) {
-    for (const [tool, count] of Object.entries(r.toolUsage.counts)) {
-      toolCounts[tool] = (toolCounts[tool] || 0) + count;
+    for (const [tool, cnt] of Object.entries(r.toolUsage.counts)) {
+      toolCounts[tool] = (toolCounts[tool] || 0) + cnt;
     }
     for (const [tool, rate] of Object.entries(r.toolUsage.successRates)) {
       toolErrors[tool] = (toolErrors[tool] || 0) + rate.errors;
@@ -97,11 +95,11 @@ export function aggregateReports(reports: SessionReport[]): SessionReport | null
   }
 
   const toolSuccessRates: Record<string, ToolSuccessRate> = {};
-  for (const [tool, count] of Object.entries(toolCounts)) {
+  for (const [tool, cnt] of Object.entries(toolCounts)) {
     const errCount = toolErrors[tool] || 0;
-    const successPct = count ? Math.round(((count - errCount) / count) * 1000) / 10 : 0;
+    const successPct = cnt ? Math.round(((cnt - errCount) / cnt) * 1000) / 10 : 0;
     toolSuccessRates[tool] = {
-      totalCalls: count,
+      totalCalls: cnt,
       errors: errCount,
       successRatePct: successPct,
       assessment: computeToolHealthAssessment(successPct),
@@ -205,13 +203,7 @@ export function aggregateReports(reports: SessionReport[]): SessionReport | null
 
   // --- Lists ---
   const skillsInvoked = reports.flatMap(r => r.skillsInvoked);
-  const bashCommands = reports.flatMap(r => Object.keys(r.bashCommands.repeated).map(cmd => cmd)); // We lose counts but okay
   // Reconstruct bash stats
-  const bashCmdCounts: Record<string, number> = {};
-  for(const r of reports) {
-      // We don't have full list in report, only 'repeated' and total count.
-      // We can't fully reconstruct. But we can sum up 'total'.
-  }
   const bashTotal = reports.reduce((sum, r) => sum + r.bashCommands.total, 0);
   const bashUnique = 0; // Hard to calculate without raw data
 

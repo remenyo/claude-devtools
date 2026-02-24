@@ -25,7 +25,7 @@ interface SessionReportTabProps {
   report?: SessionReport;
 }
 
-export const SessionReportTab = ({ tab, report: providedReport }: SessionReportTabProps) => {
+export const SessionReportTab = ({ tab, report: providedReport }: SessionReportTabProps): React.JSX.Element => {
   // Find session data from any session tab with matching sessionId
   const sessionDetail = useStore((s) => {
     // Optimization: if report is provided, we don't need sessionDetail

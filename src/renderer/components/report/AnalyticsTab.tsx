@@ -13,13 +13,13 @@ interface AnalyticsTabProps {
   tab: Tab;
 }
 
-export const AnalyticsTab = ({ tab }: AnalyticsTabProps) => {
+export const AnalyticsTab = ({ tab }: AnalyticsTabProps): React.JSX.Element => {
   const [report, setReport] = useState<SessionReport | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
 
-  const startAnalysis = async () => {
+  const startAnalysis = async (): Promise<void> => {
     setIsAnalyzing(true);
     setError(null);
     setReport(null);
