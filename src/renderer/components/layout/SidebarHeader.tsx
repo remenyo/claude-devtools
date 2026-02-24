@@ -211,6 +211,7 @@ export const SidebarHeader = (): React.JSX.Element => {
     fetchRepositoryGroups,
     fetchProjects,
     toggleSidebar,
+    openAnalytics,
   } = useStore(
     useShallow((s) => ({
       repositoryGroups: s.repositoryGroups,

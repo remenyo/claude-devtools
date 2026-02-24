@@ -20,7 +20,6 @@ import type {
   ToolSuccessRate,
   ReportCostAnalysis,
 } from '@renderer/types/sessionReport';
-import { formatDuration } from '@renderer/utils/sessionAnalyzer'; // Assuming this is exported, check if it is. If not, copy it.
 
 // Helper to format duration if not exported
 function formatDurationLocal(totalSeconds: number): string {
