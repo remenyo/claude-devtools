@@ -442,35 +442,21 @@ export const SidebarHeader = (): React.JSX.Element => {
                 Switch {viewMode === 'grouped' ? 'Repository' : 'Project'}
               </div>
 
-              {(() => {
-                const isLoading = viewMode === 'grouped' ? repositoryGroupsLoading : projectsLoading;
-                const error = viewMode === 'grouped' ? repositoryGroupsError : projectsError;
-
-                if (isLoading) {
-                  return (
-                    <div className="p-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                      Loading projects...
-                    </div>
-                  );
-                }
-
-                if (error) {
-                  return (
-                    <div className="p-3 text-sm" style={{ color: 'var(--assess-danger)' }}>
-                      Error loading projects: {error}
-                    </div>
-                  );
-                }
-
-                if (projectItems.length === 0) {
-                  return (
-                    <div className="p-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                      No {viewMode === 'grouped' ? 'repositories' : 'projects'} found
-                    </div>
-                  );
-                }
-
-                return projectItems.map((item) => {
+              {(viewMode === 'grouped' ? repositoryGroupsLoading : projectsLoading) ? (
+                <div className="p-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                  Loading projects...
+                </div>
+              ) : (viewMode === 'grouped' ? repositoryGroupsError : projectsError) ? (
+                <div className="p-3 text-sm" style={{ color: 'var(--assess-danger)' }}>
+                  Error loading projects:{' '}
+                  {viewMode === 'grouped' ? repositoryGroupsError : projectsError}
+                </div>
+              ) : projectItems.length === 0 ? (
+                <div className="p-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                  No {viewMode === 'grouped' ? 'repositories' : 'projects'} found
+                </div>
+              ) : (
+                projectItems.map((item) => {
                   const isSelected =
                     viewMode === 'grouped'
                       ? item.id === selectedRepositoryId
@@ -499,8 +485,8 @@ export const SidebarHeader = (): React.JSX.Element => {
                       }
                     />
                   );
-                });
-              })()}
+                })
+              )}
             </div>
           </>
         )}
