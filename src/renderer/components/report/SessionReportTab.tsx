@@ -17,23 +17,27 @@ import { TimelineSection } from './sections/TimelineSection';
 import { TokenSection } from './sections/TokenSection';
 import { ToolSection } from './sections/ToolSection';
 
+import type { SessionReport } from '@renderer/types/sessionReport';
 import type { Tab } from '@renderer/types/tabs';
 
 interface SessionReportTabProps {
   tab: Tab;
+  report?: SessionReport;
 }
 
-export const SessionReportTab = ({ tab }: SessionReportTabProps) => {
+export const SessionReportTab = ({ tab, report: providedReport }: SessionReportTabProps) => {
   // Find session data from any session tab with matching sessionId
   const sessionDetail = useStore((s) => {
+    // Optimization: if report is provided, we don't need sessionDetail
+    if (providedReport) return null;
     const allTabs = s.paneLayout.panes.flatMap((p) => p.tabs);
     const sourceTab = allTabs.find((t) => t.type === 'session' && t.sessionId === tab.sessionId);
     return sourceTab ? s.tabSessionData[sourceTab.id]?.sessionDetail : null;
   });
 
   const report = useMemo(
-    () => (sessionDetail ? analyzeSession(sessionDetail) : null),
-    [sessionDetail]
+    () => providedReport || (sessionDetail ? analyzeSession(sessionDetail) : null),
+    [sessionDetail, providedReport]
   );
 
   const takeaways = useMemo(() => (report ? computeTakeaways(report) : []), [report]);
@@ -48,7 +52,9 @@ export const SessionReportTab = ({ tab }: SessionReportTabProps) => {
 
   return (
     <div className="h-full overflow-y-auto p-6" style={{ backgroundColor: 'var(--color-surface)' }}>
-      <h1 className="mb-6 text-lg font-semibold text-text">Session Analysis Report</h1>
+      <h1 className="mb-6 text-lg font-semibold text-text">
+        {providedReport ? 'Analysis Report' : 'Session Analysis Report'}
+      </h1>
       <div className="flex flex-col gap-4">
         {takeaways.length > 0 && <KeyTakeawaysSection takeaways={takeaways} />}
         <OverviewSection data={report.overview} />

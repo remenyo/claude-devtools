@@ -526,6 +526,54 @@ describe('tabSlice', () => {
     });
   });
 
+  describe('openAnalytics', () => {
+    it('should open a project analytics tab', () => {
+      store.getState().openAnalytics('project', 'project-1');
+
+      const tabs = store.getState().openTabs;
+      expect(tabs).toHaveLength(1);
+      expect(tabs[0].type).toBe('analytics');
+      expect(tabs[0].scope).toBe('project');
+      expect(tabs[0].projectId).toBe('project-1');
+      expect(tabs[0].label).toBe('Project Analytics');
+    });
+
+    it('should open a global analytics tab', () => {
+      store.getState().openAnalytics('global');
+
+      const tabs = store.getState().openTabs;
+      expect(tabs).toHaveLength(1);
+      expect(tabs[0].type).toBe('analytics');
+      expect(tabs[0].scope).toBe('global');
+      expect(tabs[0].label).toBe('Global Analytics');
+    });
+
+    it('should focus existing analytics tab if already open', () => {
+      // Open project analytics
+      store.getState().openAnalytics('project', 'project-1');
+      const tabId = store.getState().activeTabId;
+
+      // Open dashboard to switch away
+      store.getState().openDashboard();
+      expect(store.getState().activeTabId).not.toBe(tabId);
+
+      // Open project analytics again
+      store.getState().openAnalytics('project', 'project-1');
+
+      expect(store.getState().openTabs).toHaveLength(2); // Analytics + Dashboard
+      expect(store.getState().activeTabId).toBe(tabId);
+    });
+
+    it('should open distinct tabs for different projects', () => {
+      store.getState().openAnalytics('project', 'project-1');
+      store.getState().openAnalytics('project', 'project-2');
+
+      expect(store.getState().openTabs).toHaveLength(2);
+      expect(store.getState().openTabs[0].projectId).toBe('project-1');
+      expect(store.getState().openTabs[1].projectId).toBe('project-2');
+    });
+  });
+
   describe('navigateToSession', () => {
     it('should open new tab if session not already open', () => {
       mockAPI.getSessionDetail.mockResolvedValue({
