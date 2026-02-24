@@ -1,0 +1,64 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-win:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup Python for node-gyp
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build app
+        run: pnpm build
+
+      - name: Generate version
+        id: version
+        shell: bash
+        run: |
+          # Use current package.json version + timestamp for uniqueness
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          # Ensure valid semver by appending build metadata or prerelease identifier
+          # Electron/Windows often prefers x.y.z, but for dev builds semver is usually okay in filename at least.
+          NEW_VERSION="${BASE_VERSION}-dev.${TIMESTAMP}"
+          echo "Setting version to $NEW_VERSION"
+          npm pkg set version="$NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Package (Windows)
+        # Using npx electron-builder directly to ensure publish is never attempted and to skip signing if envs are missing
+        run: npx electron-builder --win --publish never
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: release/*.exe
+          retention-days: 5
