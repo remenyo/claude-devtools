@@ -6,9 +6,7 @@
 import type { Session } from './data';
 import type { TriggerColor } from '@shared/constants/triggerColors';
 
-// =============================================================================
 // Navigation Request Types
-// =============================================================================
 
 /**
  * Payload for error-based navigation (from notifications or trigger preview).
@@ -64,9 +62,7 @@ export interface TabNavigationRequest {
   payload: ErrorNavigationPayload | SearchNavigationPayload | Record<string, never>;
 }
 
-// =============================================================================
 // Core Types
-// =============================================================================
 
 /**
  * Represents a single open tab in the main content area
@@ -134,9 +130,7 @@ export type DateCategory = 'Today' | 'Yesterday' | 'Previous 7 Days' | 'Older';
  */
 export type DateGroupedSessions = Record<DateCategory, Session[]>;
 
-// =============================================================================
 // Constants
-// =============================================================================
 
 /** Maximum characters for tab label before truncation */
 const TAB_LABEL_MAX_LENGTH = 50;
@@ -149,9 +143,7 @@ export const DATE_CATEGORY_ORDER: DateCategory[] = [
   'Older',
 ];
 
-// =============================================================================
 // Validation Helpers
-// =============================================================================
 
 /**
  * Find tab by session ID (for backwards compatibility)
@@ -184,9 +176,7 @@ export function truncateLabel(label: string): string {
   return label.slice(0, TAB_LABEL_MAX_LENGTH - 1) + '…';
 }
 
-// =============================================================================
 // Navigation Request Helpers
-// =============================================================================
 
 /**
  * Create an error navigation request (from notification click or trigger preview).
