@@ -58,7 +58,41 @@ export const OverviewSection = ({ data }: OverviewSectionProps) => {
             {data.sessionId.slice(0, 12)}...
           </div>
         </div>
+
+        {/* Nuanced Model Usage display */}
+        {data.effortLevel && (
+          <div>
+            <div className="text-xs text-text-muted">Effort Level</div>
+            <div className="text-sm font-medium text-text capitalize">
+              {data.effortLevel.replace('_', ' ')}
+            </div>
+          </div>
+        )}
       </div>
+
+      {data.effortLevelCounts && (
+        <div className="mt-4 pt-3 border-t border-border">
+          <div className="mb-2 text-xs font-semibold text-text-muted">Effort Breakdown</div>
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <div className="rounded bg-blue-500/10 py-1">
+              <div className="text-[10px] uppercase text-blue-400">Low</div>
+              <div className="text-sm font-medium text-text">{data.effortLevelCounts.low || 0}</div>
+            </div>
+            <div className="rounded bg-green-500/10 py-1">
+              <div className="text-[10px] uppercase text-green-400">Medium</div>
+              <div className="text-sm font-medium text-text">{data.effortLevelCounts.medium || 0}</div>
+            </div>
+            <div className="rounded bg-yellow-500/10 py-1">
+              <div className="text-[10px] uppercase text-yellow-400">High</div>
+              <div className="text-sm font-medium text-text">{data.effortLevelCounts.high || 0}</div>
+            </div>
+            <div className="rounded bg-red-500/10 py-1">
+              <div className="text-[10px] uppercase text-red-400">Max</div>
+              <div className="text-sm font-medium text-text">{data.effortLevelCounts.max_effort || 0}</div>
+            </div>
+          </div>
+        </div>
+      )}
     </ReportSection>
   );
 };
