@@ -43,6 +43,8 @@ export interface ReportOverview {
   durationSeconds: number;
   durationHuman: string;
   totalMessages: number;
+  effortLevel: 'low' | 'medium' | 'high' | 'max_effort' | null;
+  effortLevelCounts?: Record<string, number>;
 }
 
 export interface ModelTokenStats {

@@ -1100,6 +1100,15 @@ export function analyzeSession(detail: SessionDetail): SessionReport {
   const idlePct = wallClock > 0 ? Math.round((totalIdle / wallClock) * 1000) / 10 : 0;
   const thrashingSignalCount = bashNearDuplicates.length + editReworkFiles.length;
 
+  let effortLevel: 'low' | 'medium' | 'high' | 'max_effort' = 'max_effort';
+  if (totalOutputTokens < 1000 && totalCost < 0.05) {
+    effortLevel = 'low';
+  } else if (totalOutputTokens < 5000 && totalCost < 0.50) {
+    effortLevel = 'medium';
+  } else if (totalOutputTokens < 20000 && totalCost < 2.00) {
+    effortLevel = 'high';
+  }
+
   // ===================================================================
   // BUILD REPORT
   // ===================================================================
@@ -1122,6 +1131,7 @@ export function analyzeSession(detail: SessionDetail): SessionReport {
       durationSeconds,
       durationHuman: durationSeconds > 0 ? formatDuration(Math.floor(durationSeconds)) : 'unknown',
       totalMessages: messages.length,
+      effortLevel,
     },
 
     tokenUsage: {

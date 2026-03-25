@@ -40,6 +40,19 @@ export function aggregateReports(reports: SessionReport[]): SessionReport | null
   const totalCompactionCount = reports.reduce((sum, r) => sum + r.overview.compactionCount, 0);
   const totalContextConsumption = reports.reduce((sum, r) => sum + r.overview.contextConsumption, 0);
 
+  const effortLevelCounts: Record<string, number> = {
+    low: 0,
+    medium: 0,
+    high: 0,
+    max_effort: 0,
+  };
+
+  for (const r of reports) {
+    if (r.overview.effortLevel) {
+      effortLevelCounts[r.overview.effortLevel]++;
+    }
+  }
+
   // --- Token Usage ---
   const byModel: Record<string, ModelTokenStats> = {};
   for (const r of reports) {
@@ -229,6 +242,8 @@ export function aggregateReports(reports: SessionReport[]): SessionReport | null
       durationSeconds: totalDurationSeconds,
       durationHuman: formatDurationLocal(Math.floor(totalDurationSeconds)),
       totalMessages: totalMessages,
+      effortLevel: null,
+      effortLevelCounts,
     },
     tokenUsage: {
       byModel,
